@@ -101,6 +101,42 @@ sudo install lazygit -D -t /usr/local/bin/
 go install github.com/jesseduffield/lazygit@latest
 ```
 
+## GitHub CLI (gh)
+
+GitHub CLI 是 GitHub 的官方命令行工具，用于管理仓库、问题、拉取请求等。
+
+```bash
+# 方法1: 使用包管理器安装 (推荐)
+# Ubuntu/Debian
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update
+sudo apt install gh
+
+# Fedora
+sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+sudo dnf install gh
+
+# Arch Linux
+sudo pacman -S github-cli
+
+# 方法2: 使用脚本安装
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update
+sudo apt install gh
+
+# 方法3: 手动下载二进制
+# 从 GitHub Releases 下载: https://github.com/cli/cli/releases
+```
+
+安装后验证:
+```bash
+gh --version
+gh auth login
+```
+
 ## Claude Code 插件
 
 ```bash
