@@ -61,6 +61,46 @@ python-preference = "managed"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 ```
 
+## Yazi (Terminal File Manager)
+
+Yazi 是一个用 Rust 编写的终端文件管理器。
+
+```bash
+# 方法1: 使用预编译二进制 (推荐)
+curl -fsSL https://apt.fury.io/yazi-rs/gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/yazi.gpg
+echo "deb [signed-by=/usr/share/keyrings/yazi.gpg] https://apt.fury.io/yazi-rs/ /" | sudo tee /etc/apt/sources.list.d/yazi.list
+sudo apt update && sudo apt install yazi
+
+# 方法2: 使用 Cargo 安装
+cargo install --locked yazi-fm yazi-cli
+
+# 方法3: 从 GitHub Releases 下载
+# https://github.com/sxyazi/yazi/releases
+```
+
+可选依赖 (用于增强功能):
+
+```bash
+sudo apt install ffmpeg 7zip jq poppler-utils fd-find ripgrep fzf zoxide imagemagick
+```
+
+## Lazygit (Terminal Git UI)
+
+Lazygit 是一个简单的终端 Git 用户界面。
+
+```bash
+# 下载最新版本
+LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+LAZYGIT_ARCH=$(uname -m | sed -e 's/aarch64/arm64/')
+curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LAZYGIT_ARCH}.tar.gz"
+tar xf lazygit.tar.gz lazygit
+sudo install lazygit -D -t /usr/local/bin/
+```
+候选
+```bash
+go install github.com/jesseduffield/lazygit@latest
+```
+
 ## Claude Code 插件
 
 ```bash
