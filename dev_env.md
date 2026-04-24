@@ -25,7 +25,15 @@ go install golang.org/x/tools/gopls@latest
 ## Node.js
 
 ```bash
-# 替换为淘宝源
+# 安装 fnm (Node.js 版本管理器)
+curl -fsSL https://fnm.vercel.app/install | bash
+# 换源 (国内)
+export FNM_NODE_DIST_MIRROR=https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/
+# 安装最新 LTS 版本
+fnm install --lts
+# 使用该版本
+fnm use --lts
+# 然后设置 npm 源
 npm config set registry https://registry.npmmirror.com
 ```
 
