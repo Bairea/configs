@@ -19,6 +19,7 @@ npx skills add anthropics/skills@docx -g -y
 npx skills add anthropics/skills@xlsx -g -y
 npx skills add anthropics/skills@pdf -g -y
 npx skills add https://github.com/github/awesome-copilot --skill git-commit -g -y
+npx skills add https://github.com/othmanadi/planning-with-files --skill planning-with-files-zh
 ```
 
 ## 验证安装
