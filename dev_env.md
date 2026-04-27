@@ -230,17 +230,17 @@ TOOL_NAME=$(echo "$JSON_INPUT" | jq -r '.tool_name // "Unknown"')
 TOOL_INPUT=$(echo "$JSON_INPUT" | jq -r '
 .tool_input | 
 if .command then 
-  "cmd=" + (.command | .[0:80]) + (if length > 80 then "..." else "" end)
+  "cmd=" + (.command | .[0:120]) + (if length > 80 then "..." else "" end)
 elif .file_path then 
-  "path=" + (.file_path | .[0:60])
+  "path=" + (.file_path | .[0:100])
 elif .pattern then 
   "pattern=" + (.pattern | .[0:40])
 elif .url then 
-  "url=" + (.url | .[0:60])
+  "url=" + (.url | .[0:100])
 elif .query then 
-  "q=" + (.query | .[0:60])
+  "q=" + (.query | .[0:100])
 elif type == "object" then
-  . as $obj | ($obj | keys | .[0:2]) | map("\(.)=" + (.[0:20] // "")) | join(" ")
+  . as $obj | ($obj | keys | .[0:5]) | map("\(.)=" + (.[0:40] // "")) | join(" ")
 else 
   "—"
 end
