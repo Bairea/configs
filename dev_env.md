@@ -11,6 +11,20 @@ export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
 rustup component add rust-analyzer
 ```
 
+### Cargo 配置国内镜像
+
+```bash
+# 在 ~/.cargo/config.toml 中添加中科大镜像源
+mkdir -p ~/.cargo
+cat >> ~/.cargo/config.toml << 'EOF'
+[source.crates-io]
+replace-with = "ustc"
+
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+EOF
+```
+
 ## Go
 
 ```bash
