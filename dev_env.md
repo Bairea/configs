@@ -177,6 +177,27 @@ npm install -g ccstatusline
 npm install -g claude-mem
 ```
 
+```bash
+# 手动升级
+# 1. 查看当前全局 npm 安装路径（确认一下）
+npm root -g
+
+# 2. 删除旧的 claude-code 目录
+rm -rf /home/dev/nodejs/lib/node_modules/@anthropic-ai/claude-code
+
+# 3. 删除 npm 可能残留的临时目录
+rm -rf /home/dev/nodejs/lib/node_modules/@anthropic-ai/.claude-code-*
+
+# 4. 清理 npm cache（推荐）
+npm cache clean --force
+
+# 5. 重新安装
+npm install -g @anthropic-ai/claude-code
+
+# 6. 验证是否安装成功
+claude --version
+```
+
 ## RTK
 
 RTK 是一个由 RTK-AI 开发的工具。
