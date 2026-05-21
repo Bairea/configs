@@ -12,4 +12,5 @@ Agent-Task: <原始任务描述或任务 ID>
 Agent-Decision: <关键设计决策及理由>
 Agent-Limitation: <已知局限或后续 TODO>
 ```
-7. 使用uv管理python项目并运行。
+7. 在运行、构建或测试中遇到任何错误时，请将错误摘要、运行测试必要的信息和环境信息恰当的追加到 AGENTS.md或CLAUDE.md 中。
+8. 使用uv管理python项目并运行。
