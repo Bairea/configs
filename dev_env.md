@@ -165,10 +165,10 @@ gh auth login
 # 安装 Claude Code CLI
 npm install -g @anthropic-ai/claude-code
 
-# 安装 MCP 插件 (需指定命令或 URL)
-claude mcp add pyright-lsp
-claude mcp add rust-analyzer-lsp
-claude mcp add gopls-lsp
+# 安装 LSP 插件 (从官方 marketplace)
+claude plugins install pyright-lsp
+claude plugins install rust-analyzer-lsp
+claude plugins install gopls-lsp
 
 # 安装 ccstatusline (全局 npm)
 npm install -g ccstatusline
