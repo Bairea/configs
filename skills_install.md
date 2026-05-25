@@ -6,7 +6,7 @@
 
 ```bash
 npx skills add obra/superpowers -g -y
-npx skills add anthropics/skills@frontend-design -g -y
+npx skills add mattpocock/skills -g -y
 npx skills add useai-pro/openclaw-skills-security@skill-vetter -g -y
 npx skills add anthropics/skills@skill-creator -g -y
 ```
@@ -14,11 +14,17 @@ npx skills add anthropics/skills@skill-creator -g -y
 可选skills，一般推荐放在项目中安装，如果项目没有.claude目录则自动创建
 ```Bash
 # 前端与视觉
-npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices -y
-npx skills add vercel-labs/agent-skills --skill web-design-guidelines -y
-npx skills add anthropics/skills --skill webapp-testing -y
-npx skills add vercel-labs/agent-skills --skill vercel-react-native-skills -y
-npx skills add anthropics/skills --skill canvas-design -y
+npx skills add vercel-labs/agent-skills \
+  --skill vercel-react-best-practices \
+  --skill web-design-guidelines \
+  --skill vercel-react-native-skills \
+  -y
+
+npx skills add anthropics/skills \
+  --skill frontend-design \
+  --skill webapp-testing \
+  --skill canvas-design \
+  -y
 
 # flutter
 npx skills add flutter/skills -y
@@ -26,7 +32,6 @@ npx skills add flutter/skills -y
 npx skills add samber/cc-skills-golang -y
 # rust
 npx skills add actionbook/rust-skills -y
-
 
 # 联网获取信息
 npx skills add vercel-labs/agent-browser@agent-browser -y
