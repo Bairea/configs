@@ -4,7 +4,7 @@
 3. 代码风格：代码中禁止包含任何 Emoji 表情；不轻易注释，用有意义的变量名和函数名代替。
 4. 简化逻辑：专注于主流程实现，忽略 Fallback 降级处理；除非明确要求，否则不生成测试脚本和项目文档。
 5. 环境约束：基于 Linux/Windows/Mac(自己修改) 环境开发，确保所有文件使用 UTF-8 编码，杜绝中文乱码。
-6. 用中文写md文档，用英文写一句话git commit信息，遵循Angular JS规范，去掉Co-Authored-By: Claude Opus 4.6等类似大模型的信息，参考格式如下：
+6. Markdown 文档一律使用中文；Git commit message 一律使用英文单句，并遵循 AngularJS/Conventional Commits 格式，具体见下，不得添加正文、脚注或协作者信息；严禁出现 `Claude`、`ChatGPT`、`AI`、`Co-Authored-By`、`Generated with` 等任何表明由大模型生成或协作的内容。
 ```
 <type>(<scope>): <summary>
 <正文：描述本次变更的背景与动机>
@@ -12,5 +12,5 @@ Agent-Task: <原始任务描述或任务 ID>
 Agent-Decision: <关键设计决策及理由>
 Agent-Limitation: <已知局限或后续 TODO>
 ```
-7. 在运行、构建或测试中遇到任何错误时，请将错误摘要、运行测试必要的信息和环境信息恰当的追加到 AGENTS.md 或 CLAUDE.md 中。
+7. 遇到运行、构建或测试错误时，将错误摘要、必要复现命令、测试信息和环境信息，以一句话追加到项目的 AGENTS.md 或 CLAUDE.md。
 8. 使用uv管理和运行python项目。
