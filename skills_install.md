@@ -14,17 +14,8 @@ npx skills add anthropics/skills@skill-creator -g -y
 可选skills，一般推荐放在项目中安装，如果项目没有.claude目录则自动创建
 ```Bash
 # 前端与视觉
-npx skills add vercel-labs/agent-skills \
-  --skill vercel-react-best-practices \
-  --skill web-design-guidelines \
-  --skill vercel-react-native-skills \
-  -y
-
-npx skills add anthropics/skills \
-  --skill frontend-design \
-  --skill webapp-testing \
-  --skill canvas-design \
-  -y
+npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices --skill web-design-guidelines --skill vercel-react-native-skills -y
+npx skills add anthropics/skills --skill frontend-design --skill webapp-testing --skill canvas-design -y
 
 # flutter
 npx skills add flutter/skills -y
@@ -39,10 +30,7 @@ npx skills add panniantong/agent-reach@agent-reach -y
 npx skills add https://github.com/tavily-ai/skills --skill tavily-search -y
 
 # 文档
-npx skills add anthropics/skills --skill pptx -y
-npx skills add anthropics/skills@docx -y
-npx skills add anthropics/skills@xlsx -y
-npx skills add anthropics/skills@pdf -y
+npx skills add anthropics/skills --skill pptx --skill docx --skill xlsx --skill pdf -y
 
 # 其他
 npx skills add charon-fan/agent-playbook@self-improving-agent -y
