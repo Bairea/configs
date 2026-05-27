@@ -169,6 +169,7 @@ npm install -g @anthropic-ai/claude-code
 claude plugins install pyright-lsp
 claude plugins install rust-analyzer-lsp
 claude plugins install gopls-lsp
+claude plugin install security-guidance@claude-plugins-official
 
 # 安装 ccstatusline (全局 npm)
 npm install -g ccstatusline
