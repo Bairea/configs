@@ -25,8 +25,8 @@ npx skills add samber/cc-skills-golang -y
 npx skills add actionbook/rust-skills -y
 
 # 联网获取信息
-npx skills add vercel-labs/agent-browser@agent-browser -y
-npx skills add panniantong/agent-reach@agent-reach -y
+npx skills add https://github.com/browser-act/skills --skill browser-act-skill-forge
+npx skills add https://github.com/browser-act/skills --skill browser-act
 npx skills add https://github.com/tavily-ai/skills --skill tavily-search -y
 
 # 文档
