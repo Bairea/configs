@@ -35,7 +35,6 @@ npx skills add anthropics/skills --skill pptx --skill docx --skill xlsx --skill 
 # 其他
 npx skills add charon-fan/agent-playbook@self-improving-agent -y
 npx skills add vercel-labs/skills@find-skills -y
-npx skills add tanweai/pua@pua -y
 npx skills add github/awesome-copilot --skill git-commit -y
 npx skills add othmanadi/planning-with-files --skill planning-with-files-zh -y
 ```
