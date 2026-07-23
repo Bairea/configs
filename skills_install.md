@@ -23,6 +23,7 @@ npx skills add flutter/skills -y
 npx skills add samber/cc-skills-golang -y
 # rust
 npx skills add actionbook/rust-skills -y
+npx skills add https://github.com/zhanghandong/rust-skills --skill m15-anti-pattern
 
 # 联网获取信息
 npx skills add https://github.com/browser-act/skills --skill browser-act-skill-forge
@@ -31,6 +32,9 @@ npx skills add https://github.com/tavily-ai/skills --skill tavily-search -y
 
 # 文档
 npx skills add anthropics/skills --skill pptx --skill docx --skill xlsx --skill pdf -y
+# 画动态的架构图svg
+npx skills add yizhiyanhua-ai/fireworks-tech-graph --skill fireworks-tech-graph
+# ppt生成更推荐使用 https://github.com/hugohe3/ppt-master
 
 # 其他
 npx skills add charon-fan/agent-playbook@self-improving-agent -y
