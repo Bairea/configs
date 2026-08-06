@@ -94,6 +94,40 @@
       "api": "openai-completions",
       "apiKey": "$OPENCODE_GO_API_KEY"
     },
+    "ark": {
+      "baseUrl": "https://ark.cn-beijing.volces.com/api/coding/v3",
+      "api": "openai-responses",
+      "apiKey": "$ARK_API_KEY",
+      "models": [
+        {
+          "id": "ark-code-latest",
+          "name": "ark-code-latest",
+          "contextWindow": 1000000,
+          "maxTokens": 384000,
+          "input": [
+            "text"
+          ],
+          "reasoning": true,
+          "cost": {
+            "input": 3,
+            "output": 6,
+            "cacheRead": 0.025,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "deepseek",
+            "reasoningEffortMap": {
+              "minimal": "high",
+              "low": "high",
+              "medium": "high",
+              "high": "max",
+              "xhigh": "max"
+            }
+          }
+        }
+      ]
+    },
     "xfyun": {
       "baseUrl": "https://maas-coding-api.cn-huabei-1.xf-yun.com/v2",
       "api": "openai-completions",
