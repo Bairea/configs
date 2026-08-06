@@ -89,6 +89,11 @@
 # ~/.pi/agent/models.json
 {
   "providers": {
+    "opencode-go": {
+      "baseUrl": "https://opencode.ai/zen/go/v1",
+      "api": "openai-completions",
+      "apiKey": "$OPENCODE_GO_API_KEY"
+    },
     "xfyun": {
       "baseUrl": "https://maas-coding-api.cn-huabei-1.xf-yun.com/v2",
       "api": "openai-completions",
