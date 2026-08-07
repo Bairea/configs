@@ -84,6 +84,8 @@
 
 ### Pi agent
 更改 `~/.pi/agent/models.json` 和 `~/.pi/agent/settings.json` 。
+有一些供应商直接设置对应的环境变量就行，比如 OPENCODE_API_KEY
+暂时未发现能支持 openai-response，对于一些供应商，此时使用anthropic-messages的api设置
 
 ```JSON
 # ~/.pi/agent/models.json
@@ -95,8 +97,8 @@
       "apiKey": "$OPENCODE_GO_API_KEY"
     },
     "ark": {
-      "baseUrl": "https://ark.cn-beijing.volces.com/api/coding/v3",
-      "api": "openai-responses",
+      "baseUrl": "https://ark.cn-beijing.volces.com/api/coding",
+      "api": "anthropic-messages",
       "apiKey": "$ARK_API_KEY",
       "models": [
         {
