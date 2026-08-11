@@ -84,8 +84,8 @@
 
 ### Pi agent
 更改 `~/.pi/agent/models.json` 和 `~/.pi/agent/settings.json` 。
-有一些供应商直接设置对应的环境变量就行，比如 OPENCODE_API_KEY
-暂时未发现能支持 openai-response，对于一些供应商，此时使用anthropic-messages的api设置
+有一些供应商直接设置对应的环境变量就行，比如 OPENCODE_API_KEY，https://pi-doc.com/docs/latest/providers#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%88%96-auth-%E6%96%87%E4%BB%B6；
+暂时未发现能支持 openai-response，对于一些供应商，此时使用anthropic-messages的api设置。
 
 ```JSON
 # ~/.pi/agent/models.json
