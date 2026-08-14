@@ -258,10 +258,23 @@ agent-default-model:
   reasoningEffort: max
 llm-pi-ai:
   providers:
-    opencode-go: {}     # 空对象 = 用 pi-ai 内置目录，无需手写 baseURL/models
+    opencode-go:
+      apiKeyEnv: OPENCODE_GO_KEY   # ← 必须配置，否则报 Provider is not configured
 ```
 
-> 若 `providers.opencode-go` 显示 `{}` 空对象，**不是没配置**——pi-ai 内置目录已提供端点与模型目录，空对象即"全部用内置默认"。模型路由经 UI 保存后即 ACTIVE。
+> ⚠️ **关键坑（实测踩过）**：pi-ai 内置目录虽然认识 `opencode-go`（端点/模型目录自动带上），但它的认证是 `envApiKeyAuth(["OPENCODE_API_KEY"])`——**必须提供 API key**。只写 `opencode-go: {}` 空对象会在请求时报 `Provider is not configured: opencode-go`。
+>
+> 正确做法（两步）：
+>
+> ① 在 `~/.dsh/.credentials.yaml` 存 key（dsh 的 credentials 服务，provider 管理）：
+> ```yaml
+> OPENCODE_GO_KEY: sk-你的opencode-go-key
+> ```
+> （key 在 `~/AppData/Roaming/opencode/auth.json` 或 `~/.local/share/opencode/auth.json` 的 `opencode-go.key`）
+>
+> ② 在 `settings.yaml` 给 provider 配 `apiKeyEnv: OPENCODE_GO_KEY` 引用它。
+>
+> 也可以直接在 **设置 → 模型** 页面的 opencode-go 卡片里填 API Key，UI 会写 `apiKeyEnv` + 存 credential。
 
 ### 5.2 让 modlens 包装 opencode-go 的模型（本次关键更新）
 
@@ -364,7 +377,7 @@ $M config set provider openai
 $M doctor                                            # 体检
 
 # ===== 4. dsh 聊天路由走 opencode-go + 包装 =====
-# 4a. web UI 设置→模型 添加 opencode-go 供应商（baseURL/key），并把默认模型切到它
+# 4a. web UI 设置→模型 添加 opencode-go 供应商（填 API key；等价于 apiKeyEnv + ~/.dsh/.credentials.yaml），并把默认模型切到它
 # 4b. 让 modlens 包装 opencode-go：
 cat > ~/.dsh/profiles/web/cordis.patch.yml <<'EOF'
 - id: modlens
@@ -389,6 +402,7 @@ cd deepseek-harness && pnpm dsh web
 | 装了但工具不出现 | 装了旧版 / 没重启 / 没硬刷新 | `plugin list` 看版本 ≥3.9.0；重启 dsh web + Ctrl+Shift+R |
 | 模型选择器没有 opencode-go 的 "(modlens vision)" 条目 | modlens 的 upstream 仍是默认 deepseek-official | 改 `cordis.patch.yml` 的 `upstream: opencode-go` 并重启 |
 | 模型选择器里 opencode-go 无模型可选 | opencode-go 供应商没在 UI 保存成功 / 空配置未被目录识别 | 重新在 设置→模型 添加并保存；确认 `settings.yaml` 的 `llm-pi-ai.providers.opencode-go` 存在 |
+| 运行报 `Provider is not configured: opencode-go` | opencode-go 未配 API key（pi-ai 认证读 `OPENCODE_API_KEY` 环境变量或 `apiKeyEnv` 引用的 credential） | `~/.dsh/.credentials.yaml` 存 key + `settings.yaml` 配 `apiKeyEnv: OPENCODE_GO_KEY`（见 5.1），重启 |
 | 识图报错 / 超时 | 网关不支持某字段 / 网络代理 | 检查 extraBody 字段；modlens 默认不走系统代理，需在请求侧配代理 |
 | 粘贴图片没反应 | 模型选择器没切到 modlens vision 条目 | 切到 `DeepSeek V4 Flash (modlens vision)`（opencode-go 组） |
 
