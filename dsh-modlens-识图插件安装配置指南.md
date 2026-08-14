@@ -13,21 +13,22 @@
    │ 粘贴图片 / 模型调用 read_image
    ▼
 dsh (deepseek-harness, cordis 插件系统)
-   │ web profile = 一组 bundle 层叠
+   │ web profile = 一组 bundle 层叠 + cordis.patch.yml 覆盖层
    ▼
 ModLens 插件 (@liustack/modlens)
-   │ 注册 read_image 工具 + "DeepSeek-V4-* (modlens vision)" 模型条目
+   │ 注册 read_image 工具 + "(modlens vision)" 模型条目
+   │ 包装上游 = opencode-go 路由（本次配置的关键）
    ▼
-视觉引擎 (modlens 的 provider)
-   │ 本例：opencode-go 订阅 → https://opencode.ai/zen/go/v1 → mimo-v2.5
+dsh 聊天路由：opencode-go provider → deepseek-v4-flash（走你的订阅）
+dsh 识图路由：modlens → ~/.modlens/config.json → opencode-go API → mimo-v2.5
    ▼
 结构化 JSON 证据 (summary / ocr / layout / semantics / visual)
-   │
    ▼
 DeepSeek 纯文本模型 基于证据回答
 ```
 
-**关键点：图片从不直接发给 DeepSeek**（它没有视觉能力），而是先被外部引擎转成文本证据。
+**关键点 1：图片从不直接发给 DeepSeek**（它没有视觉能力），先被外部引擎转成文本证据。
+**关键点 2：有两条独立的 opencode-go 链路**——聊天走 dsh 的 `opencode-go` provider 路由，识图走 modlens 配置的视觉引擎（同一个订阅，两个入口）。
 
 ---
 
@@ -59,6 +60,16 @@ pnpm dsh web             # 启动，默认 http://127.0.0.1:3080
 
 > 后台运行（Git Bash）：`nohup pnpm dsh web > /tmp/dsh-web.log 2>&1 &`
 > 停止：`netstat -ano | grep :3080` 拿 PID → `taskkill //F //PID <pid>`
+
+### 2.1 封装成命令（可选）
+
+把启动/停止封装为 `dsh-web` / `dsh-web-stop`（脚本放 `~/bin/`，已在 Windows 用户 PATH）：
+
+- `~/bin/dsh-web`（bash 脚本）：cd 进仓库 → 检测端口占用（幂等）→ `nohup pnpm dsh web` 后台启动 → 轮询就绪 → 打印 URL
+- `~/bin/dsh-web-stop`（bash 脚本）：按端口 3080 找到 PID → `taskkill` → 确认释放
+- `~/bin/dsh-web.cmd` / `~/bin/dsh-web-stop.cmd`：PowerShell/CMD 入口，转发给 Git Bash 的 bash 执行（`.cmd` 注释必须纯 ASCII，中文注释会被 cmd 按 GBK 误解析报错）
+
+脚本头部 `DSH_DIR` 一行是仓库路径，换机器改这一行即可。
 
 ---
 
@@ -117,6 +128,8 @@ modlens 是 **host 端 bundle**（通过包内 `cordis.patch.yml` 挂载，无 c
 
 ## 4. 配置视觉引擎：opencode-go 订阅 + MiMo-V2.5
 
+> 本节配置的是 **modlens 的识图引擎**（`~/.modlens/config.json`），与 dsh 侧模型路由（第 5 节）相互独立。
+
 ### 4.1 获取你的 opencode 信息（一次性）
 
 **① API Key**（opencode 登录后自动保存）：
@@ -149,8 +162,8 @@ modlens 是 **host 端 bundle**（通过包内 `cordis.patch.yml` 挂载，无 c
 
 ```sh
 opencode models | grep mimo
-# opencode-go/mimo-v2.5        ← 视觉验证通过（本机实测）
-# opencode-go/mimo-v2.5-pro    ← 更强，同样可用
+# opencode-go/mimo-v2.5      ← 视觉验证通过（本机实测）
+# opencode-go/mimo-v2.5-pro  ← 更强，同样可用
 ```
 
 ### 4.2 先做视觉能力实测（可选但强烈建议）
@@ -223,26 +236,80 @@ $M analyze -i /path/to/image.png
 
 ---
 
-## 5. dsh 侧启用与使用
+## 5. 让 dsh 聊天走 opencode-go（供应商配置）
 
-1. **重启 dsh web**（插件是 host 端，改 profile 后必须重启）：
-   ```sh
-   taskkill //F //PID <3080端口PID>   # 或关掉旧进程
-   cd deepseek-harness && nohup pnpm dsh web > /tmp/dsh-web.log 2>&1 &
-   ```
-2. **浏览器硬刷新**（Ctrl+Shift+R）—— 保证客户端资源重新加载。
-3. 在模型选择器切到 modlens 提供的两个条目之一：
-   - **`DeepSeek-V4-Flash (modlens vision)`**
-   - **`DeepSeek-V4-Pro (modlens vision)`**
-4. 直接**粘贴图片**到输入框（无需先存文件），模型会用 `read_image` 工具走 modlens → mimo-v2.5 识图后回答。
+> 本节是让 dsh 的 **DeepSeek 聊天模型本身**走 opencode-go 订阅（而不是官方 API）。可选——想直接用官方 deepseek 可以跳过，但本指南场景（用 opencode-go 订阅）建议配置。
 
-> 包装只覆盖 DeepSeek / GLM 文本模型；这两个厂商自己的视觉型号会自动排除，不会误走包装。
+### 5.1 在 web UI 添加 opencode-go 供应商
+
+**设置 → 模型** 页面添加 provider：
+
+- 路由名：`opencode-go`（dsh 的 pi-ai 目录**内置认识**这个路由，模型目录自动带上 18 个模型：deepseek-v4-flash/pro、glm、mimo-v2.5、qwen、kimi 等）
+- API：`openai-completions`
+- Base URL：`https://opencode.ai/zen/go/v1`
+- 凭据：存你的 opencode-go key（走 dsh 的 credentials 服务）
+
+落盘位置 `~/.dsh/settings.yaml`，形如：
+
+```yaml
+agent-default-model:
+  provider: opencode-go
+  model: deepseek-v4-flash
+  reasoningEffort: max
+llm-pi-ai:
+  providers:
+    opencode-go: {}     # 空对象 = 用 pi-ai 内置目录，无需手写 baseURL/models
+```
+
+> 若 `providers.opencode-go` 显示 `{}` 空对象，**不是没配置**——pi-ai 内置目录已提供端点与模型目录，空对象即"全部用内置默认"。模型路由经 UI 保存后即 ACTIVE。
+
+### 5.2 让 modlens 包装 opencode-go 的模型（本次关键更新）
+
+modlens 的 `registerVisionProvider` 只包装 `config.upstream` 指定的一个 provider（默认 `deepseek-official`）。要让 **opencode-go 的 deepseek/glm 模型**也有识图包装，把 upstream 指过去：
+
+```yaml
+# 文件：~/.dsh/profiles/web/cordis.patch.yml
+- id: modlens
+  config:
+    upstream: opencode-go
+```
+
+改完**重启 dsh web**（`dsh-web-stop && dsh-web`）。
+
+**效果**（重启后 API 实测 `llm.models`）：
+
+| 模型组 | 内容 |
+|--------|------|
+| deepseek-official | DeepSeek-V4-Flash / DeepSeek-V4-Pro（原始，无包装） |
+| **modlens vision** | **DeepSeek V4 Flash (modlens vision)** ✅ / **DeepSeek V4 Pro (modlens vision)** ✅ / GLM-5.1 / GLM-5.2 |
+| opencode-go | 原始目录 18 个模型 |
+
+包装条目路由：识图 → modlens → mimo-v2.5；聊天 → opencode-go 的 deepseek-v4-flash。**整个链路走你的订阅。**
+
+> ⚠️ modlens 只支持一个 upstream——官方 deepseek-official 的识图包装被 opencode-go 取代。若需保留官方包装，可注册第二个 modlens 实例（`insert` 一个 `id: modlens-official`、`config.upstream: deepseek-official`、`config.providerId: deepseek-modlens-official`），但模型选择器会出现两套同名 "(modlens vision)" 条目，不易区分，不建议。
 
 ---
 
-## 6. 可选优化与替代方案
+## 6. dsh 侧启用与使用
 
-### 6.1 关闭 thinking 提速
+1. **重启 dsh web**（改了 profile 必须重启）：
+   ```sh
+   dsh-web-stop && dsh-web
+   ```
+2. **浏览器硬刷新**（Ctrl+Shift+R）—— 保证客户端资源重新加载。
+3. 在模型选择器切到 modlens 提供的条目（来自 opencode-go 的包装，注意名字带空格是 opencode-go 目录风格）：
+   - **`DeepSeek V4 Flash (modlens vision)`**（推荐，聊天走 opencode-go）
+   - `DeepSeek V4 Pro (modlens vision)`
+   - `GLM-5.1 (modlens vision)` / `GLM-5.2 (modlens vision)`
+4. 直接**粘贴图片**到输入框（无需先存文件），模型会用 `read_image` 工具走 modlens → mimo-v2.5 识图后回答。
+
+> 包装只覆盖 deepseek/glm 家族文本模型；有原生视觉的模型（mimo 等）不会被包装。
+
+---
+
+## 7. 可选优化与替代方案
+
+### 7.1 关闭 thinking 提速
 
 MiMo 是推理模型，识图时会花大量 reasoning token 重新推导转录内容。configure.md 建议：
 
@@ -253,13 +320,13 @@ $M config set openai.extraBody '{"thinking":{"type":"disabled"}}'
 > 注意：opencode 网关是否接受该字段**未验证**，需实测；若 400 报错则清掉：
 > `$M config set openai.extraBody ''`
 
-### 6.2 换更强模型
+### 7.2 换更强视觉模型
 
 ```sh
 $M config set openai.model mimo-v2.5-pro   # 更强；识别更慢
 ```
 
-### 6.3 其他视觉引擎（modlens 内置 provider）
+### 7.3 其他视觉引擎（modlens 内置 provider）
 
 | Provider | 命令 | 说明 |
 |----------|------|------|
@@ -273,7 +340,7 @@ $M config set openai.model mimo-v2.5-pro   # 更强；识别更慢
 
 ---
 
-## 7. 其他机器快速部署清单
+## 8. 其他机器快速部署清单
 
 ```sh
 # ===== 1. dsh 本体 =====
@@ -296,27 +363,38 @@ $M config set openai.model mimo-v2.5
 $M config set provider openai
 $M doctor                                            # 体检
 
-# ===== 4. 启动 =====
+# ===== 4. dsh 聊天路由走 opencode-go + 包装 =====
+# 4a. web UI 设置→模型 添加 opencode-go 供应商（baseURL/key），并把默认模型切到它
+# 4b. 让 modlens 包装 opencode-go：
+cat > ~/.dsh/profiles/web/cordis.patch.yml <<'EOF'
+- id: modlens
+  config:
+    upstream: opencode-go
+EOF
+
+# ===== 5. 启动 =====
 cd deepseek-harness && pnpm dsh web
-# 浏览器硬刷新 → 模型切到 "DeepSeek-V4-* (modlens vision)" → 粘贴图片
+# 浏览器硬刷新 → 模型切到 "DeepSeek V4 Flash (modlens vision)" → 粘贴图片
 ```
 
 ---
 
-## 8. 故障排查速查
+## 9. 故障排查速查
 
 | 症状 | 原因 | 解决 |
 |------|------|------|
 | `declares no dsh.bundle — installed as a plain dependency` | pnpm 发布冷静期压到旧版 | 加 `minimumReleaseAgeExclude` + 显式版本重装（见 3.2） |
-| pnpm 报 `Ignored build scripts` | pnpm 11 默认拦截 postinstall | 在 `~/.dsh/profiles/web` 下 `pnpm approve-builds --all`（modlens 相关插件如 better-sidebar 的 node-pty 需要） |
+| pnpm 报 `Ignored build scripts` | pnpm 11 默认拦截 postinstall | 在 `~/.dsh/profiles/web` 下 `pnpm approve-builds --all` |
 | `dsh: pnpm not found on PATH` | 未装 pnpm / 新终端未刷新 PATH | `npm i -g pnpm@11.7.0` 后重开终端 |
 | 装了但工具不出现 | 装了旧版 / 没重启 / 没硬刷新 | `plugin list` 看版本 ≥3.9.0；重启 dsh web + Ctrl+Shift+R |
+| 模型选择器没有 opencode-go 的 "(modlens vision)" 条目 | modlens 的 upstream 仍是默认 deepseek-official | 改 `cordis.patch.yml` 的 `upstream: opencode-go` 并重启 |
+| 模型选择器里 opencode-go 无模型可选 | opencode-go 供应商没在 UI 保存成功 / 空配置未被目录识别 | 重新在 设置→模型 添加并保存；确认 `settings.yaml` 的 `llm-pi-ai.providers.opencode-go` 存在 |
 | 识图报错 / 超时 | 网关不支持某字段 / 网络代理 | 检查 extraBody 字段；modlens 默认不走系统代理，需在请求侧配代理 |
-| 粘贴图片没反应 | 模型选择器没切到 modlens vision 条目 | 切到 `DeepSeek-V4-* (modlens vision)` |
+| 粘贴图片没反应 | 模型选择器没切到 modlens vision 条目 | 切到 `DeepSeek V4 Flash (modlens vision)`（opencode-go 组） |
 
 ---
 
-## 9. 参考链接
+## 10. 参考链接
 
 - dsh 仓库: https://github.com/deepseek-ai/deepseek-harness
 - ModLens 仓库: https://github.com/liustack/modlens （README.zh-CN.md / INSTALL.md / docs/troubleshooting.md / skills/modlens/references/configure.md）
