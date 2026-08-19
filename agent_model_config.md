@@ -91,6 +91,40 @@
 # ~/.pi/agent/models.json
 {
   "providers": {
+    "longcat": {
+      "baseUrl": "https://api.longcat.chat/anthropic",
+      "api": "anthropic-messages",
+      "apiKey": "$LONGCAT_API_KEY",
+      "authHeader": true,
+      "models": [
+        {
+          "id": "LongCat-2.0",
+          "name": "LongCat-2.0",
+          "contextWindow": 1000000,
+          "input": [
+            "text"
+          ],
+          "reasoning": true,
+          "cost": {
+            "input": 2,
+            "output": 8,
+            "cacheRead": 0.04,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "deepseek",
+            "reasoningEffortMap": {
+              "minimal": "high",
+              "low": "high",
+              "medium": "high",
+              "high": "max",
+              "xhigh": "max"
+            }
+          }
+        }
+      ]
+    },
     "opencode-go": {
       "baseUrl": "https://opencode.ai/zen/go/v1",
       "api": "openai-completions",
