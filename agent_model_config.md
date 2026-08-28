@@ -83,6 +83,16 @@
 ```
 
 ### Pi agent
+插件推荐：
+```Shell
+pi install npm:pi-subagents
+pi install npm:pi-mcp-adapter
+pi install npm:pi-open-tui
+pi install npm:pi-rtk-optimizer
+pi install npm:pi-web-access
+```
+`pi-web-access`插件，可以在`~/.pi/web-search.json`中配置对应的key，可见[nicobailon/pi-web-access: Web search and content extraction extension for Pi coding agent](https://github.com/nicobailon/pi-web-access#install)
+
 更改 `~/.pi/agent/models.json` 和 `~/.pi/agent/settings.json` 。
 有一些供应商直接设置对应的环境变量就行，比如 OPENCODE_API_KEY，https://pi-doc.com/docs/latest/providers#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%88%96-auth-%E6%96%87%E4%BB%B6；
 暂时未发现能支持 openai-response，对于一些供应商，此时使用anthropic-messages的api设置。
