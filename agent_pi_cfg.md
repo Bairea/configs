@@ -23,6 +23,27 @@ pi install npm:pi-web-access
 # ~/.pi/agent/models.json
 {
   "providers": {
+    "zy-api": {
+      "baseUrl": "https://image.yydsapi.uno",
+      "api": "anthropic-messages",
+      "apiKey": "$ZYAPI_API_KEY",
+      "authHeader": true,
+      "compat": {
+        "supportsEagerToolInputStreaming": false,
+        "allowEmptySignature": true,
+        "supportsLongCacheRetention": false
+      },
+      "models": [
+        {
+          "id": "grok-4.6",
+          "name": "Grok 4.6",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 500000,
+          "maxTokens": 16384
+        }
+      ]
+    },
     "longcat": {
       "baseUrl": "https://api.longcat.chat/anthropic",
       "api": "anthropic-messages",
