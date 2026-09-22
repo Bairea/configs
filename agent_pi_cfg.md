@@ -24,7 +24,7 @@ pi install npm:pi-web-access
 {
   "providers": {
     "zy-api": {
-      "baseUrl": "https://image.yydsapi.uno",
+      "baseUrl": "https://www.yydsapi.uno",
       "api": "anthropic-messages",
       "apiKey": "$ZYAPI_API_KEY",
       "authHeader": true,
@@ -35,12 +35,20 @@ pi install npm:pi-web-access
       },
       "models": [
         {
-          "id": "grok-4.6",
-          "name": "Grok 4.6",
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
           "reasoning": true,
           "input": ["text", "image"],
           "contextWindow": 500000,
-          "maxTokens": 16384
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "minimal": "minimal",
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": null
+          }
         }
       ]
     },
