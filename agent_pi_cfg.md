@@ -48,6 +48,12 @@ pi install npm:pi-web-access
             "high": "high",
             "xhigh": "xhigh",
             "max": null
+          },
+          "cost": {
+            "input": 2,
+            "output": 6,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
           }
         }
       ]
