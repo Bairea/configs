@@ -58,6 +58,40 @@ pi install npm:pi-web-access
         }
       ]
     },
+    "command-code": {
+      "baseUrl": "https://api.commandcode.ai/provider/v1",
+      "api": "openai-completions",
+      "apiKey": "$COMMAND_API_KEY",
+      "models": [
+        {
+          "id": "deepseek/deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "contextWindow": 1000000,
+          "maxTokens": 384000,
+          "input": ["text"],
+          "reasoning": true,
+          "compat": {
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "deepseek",
+            "supportsDeveloperRole": false,
+            "maxTokensField": "max_tokens",
+            "reasoningEffortMap": {
+              "minimal": "high",
+              "low": "high",
+              "medium": "high",
+              "high": "max",
+              "xhigh": "max"
+            }
+          },
+          "cost": {
+            "input": 0.15,
+            "output": 0.60,
+            "cacheRead": 0.003,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    },
     "longcat": {
       "baseUrl": "https://api.longcat.chat/anthropic",
       "api": "anthropic-messages",
