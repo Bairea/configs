@@ -58,6 +58,41 @@ pi install npm:pi-web-access
         }
       ]
     },
+    "open-design": {
+      "baseUrl": "https://amr-link.open-design.ai/v1",
+      "api": "openai-completions",
+      "apiKey": "$OD_API_KEY",
+      "models": [
+        {
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "contextWindow": 1000000,
+          "maxTokens": 384000,
+          "input": ["text", "image"],
+          "reasoning": true,
+          "compat": {
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "deepseek",
+            "supportsDeveloperRole": false,
+            "maxTokensField": "max_tokens",
+            "supportsReasoningEffort": true,
+            "reasoningEffortMap": {
+              "minimal": "high",
+              "low": "high",
+              "medium": "high",
+              "high": "max",
+              "xhigh": "max"
+            }
+          },
+          "cost": {
+            "input": 0.3,
+            "output": 1.20,
+            "cacheRead": 0.006,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    },
     "command-code": {
       "baseUrl": "https://api.commandcode.ai/provider/v1",
       "api": "openai-completions",
