@@ -24,7 +24,7 @@ pi install npm:pi-web-access
 {
   "providers": {
     "zy-api": {
-      "baseUrl": "https://www.yydsapi.uno",
+      "baseUrl": "https://image.yydsapi.uno",
       "api": "anthropic-messages",
       "apiKey": "$ZYAPI_API_KEY",
       "authHeader": true,
@@ -34,6 +34,14 @@ pi install npm:pi-web-access
         "supportsLongCacheRetention": false
       },
       "models": [
+        {
+          "id": "grok-4.6",
+          "name": "Grok 4.6",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 500000,
+          "maxTokens": 16384
+        },
         {
           "id": "grok-4.7",
           "name": "Grok 4.7",
@@ -89,108 +97,6 @@ pi install npm:pi-web-access
             "output": 1.20,
             "cacheRead": 0.006,
             "cacheWrite": 0
-          }
-        }
-      ]
-    },
-    "command-code": {
-      "baseUrl": "https://api.commandcode.ai/provider/v1",
-      "api": "openai-completions",
-      "apiKey": "$COMMAND_API_KEY",
-      "models": [
-        {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "name": "DeepSeek V4.1 Flash",
-          "contextWindow": 1000000,
-          "maxTokens": 384000,
-          "input": ["text"],
-          "reasoning": true,
-          "compat": {
-            "requiresReasoningContentOnAssistantMessages": true,
-            "thinkingFormat": "deepseek",
-            "supportsDeveloperRole": false,
-            "maxTokensField": "max_tokens",
-            "reasoningEffortMap": {
-              "minimal": "high",
-              "low": "high",
-              "medium": "high",
-              "high": "max",
-              "xhigh": "max"
-            }
-          },
-          "cost": {
-            "input": 0.15,
-            "output": 0.60,
-            "cacheRead": 0.003,
-            "cacheWrite": 0
-          }
-        }
-      ]
-    },
-    "longcat": {
-      "baseUrl": "https://api.longcat.chat/anthropic",
-      "api": "anthropic-messages",
-      "apiKey": "$LONGCAT_API_KEY",
-      "authHeader": true,
-      "models": [
-        {
-          "id": "LongCat-2.0",
-          "name": "LongCat-2.0",
-          "contextWindow": 1000000,
-          "input": [
-            "text"
-          ],
-          "reasoning": true,
-          "cost": {
-            "input": 2,
-            "output": 8,
-            "cacheRead": 0.04,
-            "cacheWrite": 0
-          },
-          "compat": {
-            "requiresReasoningContentOnAssistantMessages": true,
-            "thinkingFormat": "deepseek",
-            "reasoningEffortMap": {
-              "minimal": "high",
-              "low": "high",
-              "medium": "high",
-              "high": "max",
-              "xhigh": "max"
-            }
-          }
-        }
-      ]
-    },
-    "opencode-go": {
-      "baseUrl": "https://opencode.ai/zen/go/v1",
-      "api": "openai-completions",
-      "apiKey": "$OPENCODE_GO_API_KEY",
-      "models": [
-        {
-          "id": "deepseek-v4-flash",
-          "name": "deepseek-v4-flash",
-          "contextWindow": 1000000,
-          "maxTokens": 384000,
-          "input": [
-            "text"
-          ],
-          "reasoning": true,
-          "cost": {
-            "input": 1,
-            "output": 2,
-            "cacheRead": 0.02,
-            "cacheWrite": 0
-          },
-          "compat": {
-            "requiresReasoningContentOnAssistantMessages": true,
-            "thinkingFormat": "deepseek",
-            "reasoningEffortMap": {
-              "minimal": "high",
-              "low": "high",
-              "medium": "high",
-              "high": "max",
-              "xhigh": "max"
-            }
           }
         }
       ]
@@ -259,6 +165,12 @@ pi install npm:pi-web-access
   }
 }
 ```
+
+> **本机当前状态（2026-10-31 更新）**
+> - `models.json` 实际只启用 `zy-api` / `open-design` / `deepseek`（`command-code`、`longcat`、`opencode-go` 已移出本机配置，需要时可从 git 历史加回）。
+> - `zy-api.baseUrl` 已改为 `https://image.yydsapi.uno`（与 dsh 的 zy-api 同一 host）。
+> - `open-design` 用 `OD_API_KEY` 环境变量，本机尚未导出，使用前需 `export OD_API_KEY=...`。
+> - ⚠️ `settings.json` 的 `defaultProvider` 仍是 `opencode-go`，但 `opencode-go` 已不在 `models.json` 里，默认值悬空，pi 启动会找不到默认供应商。请改为 `deepseek` 或 `zy-api`，或重新加回 `opencode-go`。
 
 默认设置，~/.pi/agent/settings.json
 ```

@@ -214,40 +214,53 @@ dsh 的模型供应商由 `@deepseek-ai/dsh-llm-pi-ai` 插件提供，配置写�
 ## 插件
 
 本机实际装在这一个 profile 里（`~/.dsh/profiles/desktop/`），宿主版本
-`@deepseek-ai/dsh-desktop-runtime 0.2.1-rc.2`：
+`@deepseek-ai/dsh-desktop-runtime 0.2.1-rc.2`。本机是 macOS，`@copylee/dsh-computer-use`
+声明 `"os": ["win32"]`，无法安装/激活，未装；其余三个跨平台插件 + DSH-Notify-Me 已装：
 
 | 插件 | 版本 | 行 id（写 `cordis.patch.yml` 时用） | 作用 |
 |------|------|-----------------------------------|------|
-| `@copylee/dsh-computer-use` | 0.8.0 | `copylee-computer-use` | 看屏幕、点鼠标、敲键盘、开关应用 |
-| `dsh-web-tools` | 0.3.7（GitHub 源） | `dsh-web-tools` | 多家搜索/抓取供应商接入 `web_search` / `web_fetch` |
+| `dsh-web-tools` | 0.3.8（GitHub 源，文档初版写 0.3.7） | `dsh-web-tools` | 多家搜索/抓取供应商接入 `web_search` / `web_fetch` |
 | `@changfenhuang/dsh-genui` | 0.14.0 | `genui` | 把 `dsh-ui` 围栏渲染成可交互组件 |
 | `dsh-better-sidebar` | 0.28.0 | `better-sidebar` | 右侧栏：文件树 / 编辑器 / Git / 任务 / 底部工作台 |
+| `dsh-notify-me` | 1.17.0（`github:chromoany/dsh-notify-me`） | `dsh-notify-me` | 系统通知 / 提示音 / 标题标记，后台任务审批与完成提醒 |
+| `@copylee/dsh-computer-use` | 0.8.0（**未装**：仅 Windows） | `copylee-computer-use` | 看屏幕、点鼠标、敲键盘、开关应用 |
 
 版本下限（装之前对一下宿主版本，对不上插件会静默不激活）：
 
-- `@copylee/dsh-computer-use`：DSH ≥ 0.2.0-rc.2，且**只有 Windows**（`"os": ["win32"]`）
+- `@copylee/dsh-computer-use`：DSH ≥ 0.2.0-rc.2，且**只有 Windows**（`"os": ["win32"]`）——本机 macOS 未装
 - `dsh-web-tools`：DSH ≥ 0.1.0-rc.6
 - `@changfenhuang/dsh-genui`：DSH `^0.2.0-rc.1 || ^0.2.1-rc.1`
 - `dsh-better-sidebar`：DSH **≥ 0.2.1-rc.1**；0.2.0-rc.2 上只能钉 `0.26.1`，0.2.0-rc.1 用 `0.24.1`
+- `dsh-notify-me`：实测 1.17.0 在 0.2.1-rc.2 上正常；DSH Hub 标注兼容范围含 `=0.2.0-rc.1 <0.3.0-0`
 
 ### 安装
 
-桌面版走 **设置 → 插件 → 添加插件**，填包名 + 版本即可。命令行（本机 `dsh` 不在 PATH 里，
-要么先 `npm i -g @deepseek-ai/dsh`，要么用 `npx -y --package @deepseek-ai/dsh@0.2.1-rc.2 dsh ...`）：
+桌面版走 **设置 → 插件 → 添加插件**，填包名 + 版本即可。命令行：本机 `dsh` 不在 PATH 里，
+但 macOS 上 `DeepSeek Harness.app` 自带 CLI，直接用
+`/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh` 即可（无需 `npm i -g`）：
 
 ```bash
-dsh plugin --profile desktop add @copylee/dsh-computer-use@0.8.0
-dsh plugin --profile desktop add @changfenhuang/dsh-genui@0.14.0
-dsh plugin --profile desktop add dsh-better-sidebar@0.28.0
-dsh plugin --profile desktop add github:A3Boy/dsh-web-tools
+DSH="/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
+# 本机 macOS：computer-use 仅 Windows，跳过；其余跨平台插件 + Notify-Me 已装
+"$DSH" plugin --profile desktop add @changfenhuang/dsh-genui@0.14.0
+"$DSH" plugin --profile desktop add dsh-better-sidebar@0.28.0
+"$DSH" plugin --profile desktop add github:A3Boy/dsh-web-tools
+"$DSH" plugin --profile desktop add github:chromoany/dsh-notify-me
+# 若要在 Windows 上补装电脑使用插件：
+# "$DSH" plugin --profile desktop add @copylee/dsh-computer-use@0.8.0
 ```
 
 装完以后 `package.json` 会自动多出两处，**不要手改**：
 
 ```json
 {
-  "dependencies": { "@copylee/dsh-computer-use": "0.8.0", "...": "..." },
-  "dsh": { "profile": { "bundles": [ "...", "@copylee/dsh-computer-use", "..." ] } }
+  "dependencies": {
+    "@changfenhuang/dsh-genui": "0.14.0",
+    "dsh-better-sidebar": "0.28.0",
+    "dsh-web-tools": "github:A3Boy/dsh-web-tools",
+    "dsh-notify-me": "github:chromoany/dsh-notify-me"
+  },
+  "dsh": { "profile": { "bundles": [ "@changfenhuang/dsh-genui", "dsh-better-sidebar", "dsh-web-tools", "dsh-notify-me" ] } }
 }
 ```
 
@@ -400,6 +413,25 @@ Markdown+Mermaid 预览、Git 面板（含只读提交图）、任务/子代理�
   "host provides no terminal capability" 说明该部署没挂 terminal controller。
 - pnpm 11 报 `Ignored build scripts` 时，到 `~/.dsh/profiles/desktop` 里跑 `pnpm approve-builds`。
 - 升级后偏好"丢了"其实是搬到了挂载行上（老 `settings.yaml` 会迁移一次，不会反向覆盖）。
+
+### 5. 通知提醒：`dsh-notify-me`
+
+包名 `github:chromoany/dsh-notify-me`（v1.17.0，MIT）。让你离开 DSH 页面时也能知道 agent 何时
+需要你裁决（审批 / 方案确认 / 提问）或后台回复跑完：系统通知 + 提示音 + 标签页标题标记。审批通知
+还带「同意 / 拒绝」按钮（Web 端走带按钮的系统通知；桌面端点通知回到对话里裁决）。
+
+配置走 **设置 → Notify me**（首次安装后刷新一次页面即可看到）。主要开关：启用提醒（总开关）、
+系统通知 / 提示音 / 音量、页面打开时也提醒「需要你」（默认开）、页面打开时也提醒「回复完成」
+（默认关）、当前对话不弹通知（默认开）、子代理会话不提醒（默认开）、点击通知回到对应对话
+（默认开）。高级设置里还有音效来源、外部推送（Discord / Bark / Gotify / 飞书群机器人 / Server酱 /
+WxPusher / 自定义 Webhook）、运行环境与诊断。
+
+踩坑：
+- **macOS 首次通知可能被系统静默**：系统设置里的「专注模式」「定时摘要」会把横幅收进摘要；
+  若一条都看不到，先检查 系统设置 → 通知 → DeepSeek Harness。
+- **桌面端点通知没有快捷裁决按钮**：点通知回到对话里裁决（Web 端才有按钮）。
+- 多个 DSH 客户端同时在线会各弹一次（桌面窗口 + 浏览器标签页），跨客户端不重复。
+- 若 profile 未装配 `dsh-client-ui-session`，插件退化为「只有设置卡、不发通知」，不报错。
 
 ### 通用踩坑
 
